@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<yandex>
+    <profiles>
+        <default>
+            <!-- Maximum memory usage for processing single query, in bytes. -->
+            <!--- 10737412740 = 10 Gb -->
+            <max_memory_usage>100737412740</max_memory_usage>
+            <use_uncompressed_cache>0</use_uncompressed_cache>
+            <load_balancing>random</load_balancing>
+        </default>
+    </profiles>
+
+    <users>
+        <default>
+            <password>changeme</password>
+            <profile>default</profile>
+            <quota>default</quota>
+            <networks incl="networks" replace="replace">
+                <ip>::/0</ip>
+            </networks>
+        </default>
+    </users>
+</yandex>
