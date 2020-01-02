@@ -47,12 +47,10 @@ func (useCase *RecordEvent) Execute(c echo.Context) error {
 
 	event := eventRequest.MakeEvent()
 
-	go func() {
-		_, err := useCase.EventRepository.Record(event)
-		if err != nil {
-			useCase.Logger.Error(err)
-		}
-	}()
+	_, err := useCase.EventRepository.Record(event)
+	if err != nil {
+		useCase.Logger.Error(err)
+	}
 
 	return nil
 
