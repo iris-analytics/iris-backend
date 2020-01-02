@@ -7,6 +7,7 @@ require (
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0
 	github.com/mailru/go-clickhouse v1.2.0
+	github.com/sethgrid/pester v0.0.0-20190127155807-68a33a018ad0
 	github.com/stretchr/testify v1.4.0
 	go.uber.org/atomic v1.5.1 // indirect
 	go.uber.org/multierr v1.4.0 // indirect

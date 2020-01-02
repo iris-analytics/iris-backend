@@ -1,7 +1,7 @@
 include .env
 export
 
-.PHONY : run test up down ch
+.PHONY : run test up down ch logs
 
 run:
 	go run cmd/iris-backend.go
@@ -13,3 +13,5 @@ down:
 	docker-compose down --remove-orphans
 ch:
 	docker-compose exec ch sh -c "clickhouse-client -u default --password changeme -d iris"
+logs:
+	docker-compose logs -f
