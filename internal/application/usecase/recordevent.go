@@ -7,11 +7,13 @@ import (
 	"github.com/iris-analytics/iris-backend/internal/domain/repository"
 	"github.com/iris-analytics/iris-backend/internal/infrastructure/transformer"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
 )
 
 // RecordEvent will record the event sent to the backend
 type RecordEvent struct {
 	EventRepository repository.EventRepositoryInterface
+	Logger          *zap.SugaredLogger
 }
 
 // Execute will execute the use case
@@ -21,7 +23,7 @@ func (useCase *RecordEvent) Execute(c echo.Context) error {
 	md, _ := strconv.ParseBool(c.QueryParam("md"))
 	tz, _ := strconv.ParseInt(c.QueryParam("tz"), 10, 16)
 
-	req := transformer.Request{
+	eventRequest := transformer.Request{
 		AccountID:        c.QueryParam("id"),
 		VisitorID:        c.QueryParam("uid"),
 		SessionID:        c.QueryParam("sid"),
@@ -43,12 +45,12 @@ func (useCase *RecordEvent) Execute(c echo.Context) error {
 		IPAddress:        c.RealIP(),
 	}
 
-	r := req.MakeEvent()
+	event := eventRequest.MakeEvent()
 
 	go func() {
-		_, err := useCase.EventRepository.Persist(r)
+		_, err := useCase.EventRepository.Record(event)
 		if err != nil {
-			c.Logger().Error(err)
+			useCase.Logger.Error(err)
 		}
 	}()
 
