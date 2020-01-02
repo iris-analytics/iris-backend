@@ -2,8 +2,6 @@ DROP DATABASE IF EXISTS iris;
 
 CREATE DATABASE IF NOT EXISTS iris;
 
-USE iris;
-
 CREATE TABLE IF NOT EXISTS iris.source
 (
     account String,
