@@ -1,24 +1,30 @@
 package clickhouse
 
 import (
-	"database/sql"
+	"bytes"
+	"compress/gzip"
+	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/iris-analytics/iris-backend/internal/domain/entity"
 	"github.com/iris-analytics/iris-backend/internal/domain/repository"
+	"github.com/sethgrid/pester"
 )
 
 // EventRepository persists PageViews in ClickHouse
 type EventRepository struct {
-	connection  *sql.DB
-	targetTable string
+	httpClient      pester.Client
+	clickHouseDSN   string
+	clickHouseTable string
 }
 
 // NewEventRepository creates a new repository
-func NewEventRepository(c *sql.DB, targetTable string) repository.EventRepositoryInterface {
+func NewEventRepository(httpClient *pester.Client, clickHouseDSN string, clickHouseTable string) repository.EventRepositoryInterface {
 	r := &EventRepository{
-		connection:  c,
-		targetTable: targetTable,
+		httpClient:      *httpClient,
+		clickHouseDSN:   clickHouseDSN,
+		clickHouseTable: clickHouseTable,
 	}
 	return r
 }
@@ -26,71 +32,64 @@ func NewEventRepository(c *sql.DB, targetTable string) repository.EventRepositor
 // Persist persist PageViews into ClickHouse
 func (r *EventRepository) Persist(e *entity.Event) (*entity.Event, error) {
 
-	insertSQL := `
-	INSERT INTO {{target.table}}
-			(
-				account,
-				timestamp,
-				event_type,
-				visitor_id,
-				session_id,
+	CSVInsertLine := fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v",%d,"%v","%v",%d,"%v",%d,"%v","%v"`,
+		doubleQuoteQuotes(e.GetAccountID()),
+		doubleQuoteQuotes(e.GetTimestamp().Format("2006-01-02 15:04:05")),
+		doubleQuoteQuotes(e.GetEventType()),
+		doubleQuoteQuotes(e.GetVisitorID()),
+		doubleQuoteQuotes(e.GetSessionID()),
 
-				event_data,
-				document_location,
-				referrer_location,
-				document_encoding,
+		doubleQuoteQuotes(e.GetEventData()),
+		doubleQuoteQuotes(e.GetDocumentLocation()),
+		doubleQuoteQuotes(e.GetReferrerLocation()),
+		doubleQuoteQuotes(e.GetDocumentEncoding()),
 
-				screen_resolution,
-				view_port,
-				color_depth,
-				document_title,
-				browser_name,
-
-				is_mobile_device,
-				user_agent,
-				timezone_offset,
-				utm,
-				ip_address
-			)
-		VALUES(
-			?,?,?,?,? ,?,?,?,? ,?,?,?,?,? ,?,?,?,?,?
-		)
-	`
-	insertSQL = strings.Replace(insertSQL, "{{target.table}}", r.targetTable, 1)
-
-	tx, _ := r.connection.Begin()
-	stmt, _ := tx.Prepare(insertSQL)
-
-	if _, err := stmt.Exec(
-		e.GetAccountID(),
-		e.GetTimestamp(),
-		e.GetEventType(),
-		e.GetVisitorID(),
-		e.GetSessionID(),
-
-		e.GetEventData(),
-		e.GetDocumentLocation(),
-		e.GetReferrerLocation(),
-		e.GetDocumentEncoding(),
-
-		e.GetScreenResolution(),
-		e.GetViewPort(),
+		doubleQuoteQuotes(e.GetScreenResolution()),
+		doubleQuoteQuotes(e.GetViewPort()),
 		e.GetColorDepth(),
-		e.GetDocumentTitle(),
-		e.GetBrowserName(),
+		doubleQuoteQuotes(e.GetDocumentTitle()),
+		doubleQuoteQuotes(e.GetBrowserName()),
 
-		e.GetIsMobileDevice(),
-		e.GetUserAgent(),
+		boolToInt8(e.GetIsMobileDevice()),
+		doubleQuoteQuotes(e.GetUserAgent()),
 		e.GetTimeZoneOffset(),
-		e.GetUtm(),
-		e.GetIPAddress(),
-	); err != nil {
-		return nil, err
+		doubleQuoteQuotes(e.GetUtm()),
+		doubleQuoteQuotes(e.GetIPAddress()),
+	)
+
+	var buffer bytes.Buffer
+	gz := gzip.NewWriter(&buffer)
+	_, _ = gz.Write([]byte(CSVInsertLine))
+	gz.Close()
+
+	request, _ := http.NewRequest(
+		"POST",
+		r.clickHouseDSN+"/?query=INSERT%20INTO%20"+r.clickHouseTable+"%20FORMAT%20CSV",
+		&buffer,
+	)
+	request.Header.Set("Content-Encoding", "gzip")
+
+	response, err := r.httpClient.Do(request)
+
+	if err != nil {
+		return e, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
+	if response.StatusCode != 200 {
+		return e, err
 	}
 
 	return e, nil
+}
+
+func boolToInt8(v bool) int8 {
+	if v == true {
+		return 1
+	}
+
+	return 0
+}
+
+func doubleQuoteQuotes(s string) string {
+	return strings.Replace(s, "\"", "\"\"", -1)
 }
