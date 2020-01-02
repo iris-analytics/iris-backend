@@ -1,4 +1,4 @@
-package ping
+package handler
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSimple(t *testing.T) {
+func TestPingHandlePingReturnsProperResponse(t *testing.T) {
 
 	// Arrange
 	e := echo.New()
@@ -17,10 +17,10 @@ func TestSimple(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := Handler{}
+	h := Ping{}
 	// Act
 	// Assert
-	if assert.NoError(t, h.Ping(c)) {
+	if assert.NoError(t, h.HandlePing(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, "\"PONG\"\n", rec.Body.String())
 	}

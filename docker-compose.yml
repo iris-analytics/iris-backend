@@ -1,40 +1,30 @@
 version: "3"
 
 services:
- 
+
   iris-backend:
     build:
       context: .
       dockerfile: ./docker/iris-backend/Dockerfile
     ports:
       - "80:80"
-    environment: 
+    environment:
       - IRIS_CLICKHOUSE_DSN=http://default:changeme@ch:8123/iris
       - IRIS_LISTEN_BINDING=:80
-    networks: 
-      - iris
-    # depends_on: 
-    #   - ch
-
   zk:
     image: zookeeper
-    container_name: zk
     ports:
       - 2181:2181
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=zk:2888:3888;2181
-    volumes: 
-      - "./docker/zookeeper/zoo.cfg:/conf/zoo.cfg"
-    networks: 
-      - iris
 
   ch:
     image: yandex/clickhouse-server:latest
     container_name: ch
     volumes:
-      - "./docker/clickhouse/config.xml:/etc/clickhouse-server/config.d/common.xml"
-      - "./docker/clickhouse/macros.xml:/etc/clickhouse-server/config.d/local.xml"
+      - "./docker/clickhouse/config.xml:/etc/clickhouse-server/config.d/common.xml:ro"
+      - "./docker/clickhouse/macros.xml:/etc/clickhouse-server/config.d/macros.xml"
       - "./docker/clickhouse/users.xml:/etc/clickhouse-server/users.d/users.xml"
       - "./etc/clickhouse/setup.sql:/docker-entrypoint-initdb.d/setup.sql"
     ports:
@@ -46,10 +36,5 @@ services:
       - /var/lib/clickhouse
     environment:
       CLICKHOUSE_PASSWORD: changeme
-    networks:
-      - iris
-    depends_on: 
+    depends_on:
       - zk
-  
-networks: 
-  iris:

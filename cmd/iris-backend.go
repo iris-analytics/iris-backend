@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"os"
 
+	"github.com/iris-analytics/iris-backend/internal/application/usecase"
 	"github.com/iris-analytics/iris-backend/internal/infrastructure/config"
-	"github.com/iris-analytics/iris-backend/internal/infrastructure/handler/ingestion"
-	"github.com/iris-analytics/iris-backend/internal/infrastructure/handler/ping"
+	"github.com/iris-analytics/iris-backend/internal/infrastructure/handler"
 	"github.com/iris-analytics/iris-backend/internal/infrastructure/persistence/clickhouse"
 
 	"github.com/labstack/echo"
@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const APP_NAME = "iris-backend"
+const appName = "iris-backend"
 
 func main() {
 
@@ -37,17 +37,20 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	// Ingest data
+	// Record event
+
 	eventRepo := clickhouse.NewEventRepository(db)
-	eventHandler := ingestion.NewEventHandler(eventRepo)
-	e.GET("/iris/iris.gif", eventHandler.Ingest).Name = "ingestGET"
-	e.POST("/iris/iris.gif", eventHandler.Ingest).Name = "ingestPOST"
+	recordEventHandler := handler.RecordEvent{
+		UseCase: &usecase.RecordEvent{EventRepository: eventRepo},
+	}
+	e.GET(config.RecorderPath, recordEventHandler.HandleRecordEvent).Name = "RecordeventGET"
+	e.POST(config.RecorderPath, recordEventHandler.HandleRecordEvent).Name = "RecordeventPOST"
 
 	// Ping
-	sh := ping.Handler{}
-	e.GET("/ping", sh.Ping).Name = "ping"
+	pingHandler := handler.Ping{}
+	e.GET("/ping", pingHandler.HandlePing).Name = "ping"
 
-	logger.Info(APP_NAME + " running on " + config.ListenBinding)
+	logger.Info(appName + " running on " + config.ListenBinding)
 
 	err = e.Start(config.ListenBinding)
 
@@ -87,7 +90,7 @@ func getSugaredLogger() *zap.SugaredLogger {
 		zapcore.NewCore(jsonEncoder, stdErrSync, zap.LevelEnablerFunc(stderrEnabler)),
 	)
 	logger := zap.New(core)
-	logger = logger.Named(APP_NAME)
+	logger = logger.Named(appName)
 	sugaredLogger := logger.Sugar()
 
 	hostname, _ := os.Hostname()
