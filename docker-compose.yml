@@ -3,14 +3,19 @@ version: "3"
 services:
 
   iris-backend:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./docker/iris-backend/Dockerfile
     ports:
-      - "80:80"
+      - "${IRIS_LISTEN_BINDING}:${IRIS_LISTEN_BINDING}"
     environment:
-      - IRIS_CLICKHOUSE_DSN=http://default:changeme@ch:8123/iris
-      - IRIS_LISTEN_BINDING=:80
+    - IRIS_CLICKHOUSE_DSN=${IRIS_CLICKHOUSE_DSN}
+    - IRIS_CLICKHOUSE_TABLE=${IRIS_CLICKHOUSE_TABLE}
+    - IRIS_LISTEN_BINDING=${IRIS_LISTEN_BINDING}
+    - IRIS_RECORDER_PATH=${IRIS_RECORDER_PATH}
+
   zk:
     image: zookeeper
     ports:
