@@ -38,8 +38,7 @@ func main() {
 	}
 
 	// Record event
-
-	eventRepo := clickhouse.NewEventRepository(db)
+	eventRepo := clickhouse.NewEventRepository(db, config.ClickHouseTable)
 	recordEventHandler := handler.RecordEvent{
 		UseCase: &usecase.RecordEvent{EventRepository: eventRepo},
 	}
@@ -50,9 +49,9 @@ func main() {
 	pingHandler := handler.Ping{}
 	e.GET("/ping", pingHandler.HandlePing).Name = "ping"
 
-	logger.Info(appName + " running on " + config.ListenBinding)
+	logger.Info(appName + " running on port " + config.ListenBinding)
 
-	err = e.Start(config.ListenBinding)
+	err = e.Start(":" + config.ListenBinding)
 
 	if err != nil {
 		logger.Fatal(err)

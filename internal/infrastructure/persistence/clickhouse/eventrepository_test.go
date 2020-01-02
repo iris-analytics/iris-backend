@@ -16,7 +16,7 @@ func TestNewEventRepositoryReturnsProperInstance(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	// Act
-	r := NewEventRepository(db)
+	r := NewEventRepository(db, "iris.table")
 	// Assert
 	assert.Implements(t, (*repository.EventRepositoryInterface)(nil), r)
 }
