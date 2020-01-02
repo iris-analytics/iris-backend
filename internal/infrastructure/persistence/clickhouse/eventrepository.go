@@ -29,8 +29,8 @@ func NewEventRepository(httpClient *pester.Client, clickHouseDSN string, clickHo
 	return r
 }
 
-// Persist persist PageViews into ClickHouse
-func (r *EventRepository) Persist(e *entity.Event) (*entity.Event, error) {
+// Record event into ClickHouse
+func (r *EventRepository) Record(e *entity.Event) (*entity.Event, error) {
 
 	CSVInsertLine := fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v",%d,"%v","%v",%d,"%v",%d,"%v","%v"`,
 		doubleQuoteQuotes(e.GetAccountID()),

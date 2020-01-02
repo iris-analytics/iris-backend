@@ -31,7 +31,11 @@ func main() {
 	httpClient := provider.GetPesterHTTPClient()
 	eventRepo := clickhouse.NewEventRepository(httpClient, config.ClickHouseDSN, config.ClickHouseTable)
 	recordEventHandler := handler.RecordEvent{
-		UseCase: &usecase.RecordEvent{EventRepository: eventRepo},
+		UseCase: &usecase.RecordEvent{
+			EventRepository: eventRepo,
+			Logger:          logger,
+		},
+		Logger: logger,
 	}
 	e.GET(config.RecorderPath, recordEventHandler.HandleRecordEvent).Name = "RecordeventGET"
 	e.POST(config.RecorderPath, recordEventHandler.HandleRecordEvent).Name = "RecordeventPOST"

@@ -2,7 +2,7 @@ package provider
 
 import "github.com/sethgrid/pester"
 
-// GetPesterHTTPClient ...
+// GetPesterHTTPClient returns an instance of Pester
 func GetPesterHTTPClient() *pester.Client {
 	httpClient := pester.New()
 	httpClient.Concurrency = 1

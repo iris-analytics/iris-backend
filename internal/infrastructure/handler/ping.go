@@ -12,5 +12,6 @@ type Ping struct {
 
 // HandlePing does pong
 func (h Ping) HandlePing(c echo.Context) error {
+
 	return c.JSON(http.StatusOK, "PONG")
 }
