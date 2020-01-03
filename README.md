@@ -13,7 +13,7 @@ The application stores data in [ClickHouse](https://clickhouse.yandex/) using a 
     - [From docker image](#from-docker-image)
     - [Required environment variables](#required-environment-variables)
   - [Test](#test)
-  - [Extend it](#extend-it)
+  - [Request example](#request-example)
 
 ## Run it
 
@@ -48,6 +48,11 @@ Example: check [.env.dist](.env.dist)
 make test
 ```
 
-## Extend it
+## Request example
 
-@todo
+```bash
+curl -X GET \
+  'http://localhost:1777/iris/recordevent.gif?id=XX-1234567&uid=5a240440-7968-46be-ba20-b70494cff79b&sid=f6d5fe76-5296-42db-8f1d-18add142d79b&ev=pageload&ed=%7B%22foo%22%3A%22bar%22%7D&v=1&dl=http%3A%2F%2Fwww.example.com%2Ffoo&rl=http%3A%2F%2Fwww.example.com%2Fbar&ts=1567493483504&de=UTF-8&sr=1920x1080&vp=837x934&cd=24&dt=This%20is%20iris%20tracking&bn=Firefox%2068&md=false&ua=Mozilla%2F5.0%20(X11%3B%20Ubuntu%3B%20Linux%20x86_64%3B%20rv%3A68.0)%20Gecko%2F20100101%20Firefox%2F68.0&tz=-120&utm=%7B%22source%22%3A%22source%22%2C%22medium%22%3A%22medium%22%2C%22term%22%3A%22term%22%2C%22content%22%3A%22content%22%2C%22campaign%22%3A%22campaign%22%7D' \
+  -H 'cache-control: no-cache'
+
+```
