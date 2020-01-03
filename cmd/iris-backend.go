@@ -29,7 +29,12 @@ func main() {
 
 	// Record event
 	httpClient := provider.GetPesterHTTPClient()
-	eventRepo := clickhouse.NewEventRepository(httpClient, config.ClickHouseDSN, config.ClickHouseTable)
+	eventRepo := clickhouse.NewEventRepository(
+		httpClient,
+		config.ClickHouseDSN,
+		config.ClickHouseTable,
+		logger,
+	)
 	recordEventHandler := handler.RecordEvent{
 		UseCase: &usecase.RecordEvent{
 			EventRepository: eventRepo,
@@ -37,6 +42,9 @@ func main() {
 		},
 		Logger: logger,
 	}
+
+	// Record event happens in both GET and POST since it can be via tracking pixel (GET)
+	// or document.beacon (navigator.sendBeacon). In both cases, data is sent in query string
 	e.GET(config.RecorderPath, recordEventHandler.HandleRecordEvent).Name = "RecordeventGET"
 	e.POST(config.RecorderPath, recordEventHandler.HandleRecordEvent).Name = "RecordeventPOST"
 
