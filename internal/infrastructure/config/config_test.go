@@ -52,7 +52,7 @@ func (suite *ConfigTestSuite) TestErrorIfClickHouseDSNVarIsNotSet() {
 	_, err := NewConfig()
 	// Assert
 	suite.NotNil(err)
-	suite.Equal("Environment variable IRIS_CLICKHOUSE_DSN is not set", err.Error())
+	suite.Equal("environment variable IRIS_CLICKHOUSE_DSN is not set", err.Error())
 }
 func (suite *ConfigTestSuite) TestErrorIfClickHouseTableVarIsNotSet() {
 	// Arrange
@@ -63,7 +63,7 @@ func (suite *ConfigTestSuite) TestErrorIfClickHouseTableVarIsNotSet() {
 	_, err := NewConfig()
 	// Assert
 	suite.NotNil(err)
-	suite.Equal("Environment variable IRIS_CLICKHOUSE_TABLE is not set", err.Error())
+	suite.Equal("environment variable IRIS_CLICKHOUSE_TABLE is not set", err.Error())
 }
 func (suite *ConfigTestSuite) TestErrorIfListenBindingVarIsNotSet() {
 	// Arrange
@@ -74,7 +74,7 @@ func (suite *ConfigTestSuite) TestErrorIfListenBindingVarIsNotSet() {
 	_, err := NewConfig()
 	// Assert
 	suite.NotNil(err)
-	suite.Equal("Environment variable IRIS_LISTEN_BINDING is not set", err.Error())
+	suite.Equal("environment variable IRIS_LISTEN_BINDING is not set", err.Error())
 }
 func (suite *ConfigTestSuite) TestErrorIfRecorderPathVarIsNotSet() {
 	// Arrange
@@ -85,7 +85,7 @@ func (suite *ConfigTestSuite) TestErrorIfRecorderPathVarIsNotSet() {
 	_, err := NewConfig()
 	// Assert
 	suite.NotNil(err)
-	suite.Equal("Environment variable IRIS_RECORDER_PATH is not set", err.Error())
+	suite.Equal("environment variable IRIS_RECORDER_PATH is not set", err.Error())
 }
 
 func TestConfigSuite(t *testing.T) {
