@@ -89,7 +89,7 @@ func (r *EventRepository) Record(e *entity.Event) (*entity.Event, error) {
 
 // ClickHouse doesn't have a bool type so it must be either 0 or 1
 func boolToInt8(v bool) int8 {
-	if v == true {
+	if v {
 		return 1
 	}
 

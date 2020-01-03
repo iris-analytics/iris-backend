@@ -22,16 +22,16 @@ func NewConfig() (*Config, error) {
 	recorderPath, recorderPathExists := os.LookupEnv("IRIS_RECORDER_PATH")
 
 	if !clickHouseDSNExists {
-		return nil, errors.New("Environment variable IRIS_CLICKHOUSE_DSN is not set")
+		return nil, errors.New("environment variable IRIS_CLICKHOUSE_DSN is not set")
 	}
 	if !clickhouseTableExists {
-		return nil, errors.New("Environment variable IRIS_CLICKHOUSE_TABLE is not set")
+		return nil, errors.New("environment variable IRIS_CLICKHOUSE_TABLE is not set")
 	}
 	if !listenBindingExists {
-		return nil, errors.New("Environment variable IRIS_LISTEN_BINDING is not set")
+		return nil, errors.New("environment variable IRIS_LISTEN_BINDING is not set")
 	}
 	if !recorderPathExists {
-		return nil, errors.New("Environment variable IRIS_RECORDER_PATH is not set")
+		return nil, errors.New("environment variable IRIS_RECORDER_PATH is not set")
 	}
 
 	return &Config{
