@@ -50,9 +50,37 @@ make test
 
 ## Request example
 
+You can copy and paste the url in your browser if you don't want to use curl.
+
 ```bash
 curl -X GET \
   'http://localhost:1777/iris/recordevent.gif?id=XX-1234567&uid=5a240440-7968-46be-ba20-b70494cff79b&sid=f6d5fe76-5296-42db-8f1d-18add142d79b&ev=pageload&ed=%7B%22foo%22%3A%22bar%22%7D&v=1&dl=http%3A%2F%2Fwww.example.com%2Ffoo&rl=http%3A%2F%2Fwww.example.com%2Fbar&ts=1567493483504&de=UTF-8&sr=1920x1080&vp=837x934&cd=24&dt=This%20is%20iris%20tracking&bn=Firefox%2068&md=false&ua=Mozilla%2F5.0%20(X11%3B%20Ubuntu%3B%20Linux%20x86_64%3B%20rv%3A68.0)%20Gecko%2F20100101%20Firefox%2F68.0&tz=-120&utm=%7B%22source%22%3A%22source%22%2C%22medium%22%3A%22medium%22%2C%22term%22%3A%22term%22%2C%22content%22%3A%22content%22%2C%22campaign%22%3A%22campaign%22%7D' \
-  -H 'cache-control: no-cache'
+  -H 'cache-control: no-cache' --output -
 
 ```
+
+It will track the following data
+
+|Parameter   |Value   |
+|---|---|
+|id| XX-1234567|
+|uid| 5a240440-7968-46be-ba20-b70494cff79b|
+|sid| f6d5fe76-5296-42db-8f1d-18add142d79b|
+|ev| pageload|
+|ed| {"foo":"bar"}|
+|v| 1|
+|dl| http://www.example.com/foo|
+|rl| http://www.example.com/bar|
+|ts| 1567493483504|
+|de| UTF-8|
+|sr| 1920x1080|
+|vp| 837x934|
+|cd| 24|
+|dt| This is iris tracking|
+|bn| Firefox 68|
+|md| false|
+|ua| Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0|
+|tz| -120|
+|utm| {"source":"source","medium":"medium","term":"term","content":"content","campaign":"campaign"}|
+
+And it will respond a transparent GIF pixel.
